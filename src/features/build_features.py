@@ -2,6 +2,8 @@ import pandas as pd
 import numpy as np
 import os
 import sys
+import pathlib
+import yaml
 
 from dataclasses import dataclass
 
@@ -21,60 +23,62 @@ class DataTransformationConfig:
     test_arr_path= os.path.join("data\processed", "test_arr.csv")
 
 class DataTransformation:
-    def __init__(self) -> None:
+    def __init__(self):
         self.data_transformation_config= DataTransformationConfig()
 
 
-    def get_data_transformer_obj(self):
+    def get_data_transformer_obj(self,train_df, test_df):
         '''
         This function is responsible for data transformation
         '''
 
         try:
-            df.drop(columns='id', axis=1, inplace=True)
+            train_df.drop(columns='id', axis=1, inplace=True)
+            test_df.drop(columns='id', axis=1, inplace=True)
 
-            df["pickup_datetime"] = pd.to_datetime(df["pickup_datetime"])
-            df["pickup_hour"] = df["pickup_datetime"].dt.hour
-            df["pickup_minute"] = df["pickup_datetime"].dt.minute
-            df["pickup_second"] = df["pickup_datetime"].dt.second/100
-            df["pickup_minute_of_the_day"] = df["pickup_hour"] * 60 + df["pickup_minute"]
-            df["pickup_day_week"] =df["pickup_datetime"].dt.dayofweek
-            df["pickup_month"] = df["pickup_datetime"].dt.month
-
-
-            df["dropoff_datetime"] = pd.to_datetime(df["dropoff_datetime"])
-            df["dropoff_hour"] = df["dropoff_datetime"].dt.hour
-            df["dropoff_minute"] = df["dropoff_datetime"].dt.minute
-            df["dropoff_second"] = df["dropoff_datetime"].dt.second/100
-            df["dropoff_minute_of_the_day"] = df["dropoff_hour"] * 60 + df["dropoff_minute"]
-            df["dropoff_day_week"] =df["dropoff_datetime"].dt.dayofweek
-            df["dropoff_month"] = df["dropoff_datetime"].dt.month
-
-            df["pickup_datetime"] = pd.to_datetime(df["pickup_datetime"])
-            df["pickup_hour"] = df["pickup_datetime"].dt.hour
-            df["pickup_minute"] = df["pickup_datetime"].dt.minute
-            df["pickup_second"] = df["pickup_datetime"].dt.second/100
-            df["pickup_minute_of_the_day"] = df["pickup_hour"] * 60 + df["pickup_minute"]
-            df["pickup_day_week"] =df["pickup_datetime"].dt.dayofweek
-            df["pickup_month"] = df["pickup_datetime"].dt.month
+            train_df["pickup_datetime"] = pd.to_datetime(train_df["pickup_datetime"])
+            train_df["pickup_hour"] = train_df["pickup_datetime"].dt.hour
+            train_df["pickup_minute"] = train_df["pickup_datetime"].dt.minute
+            train_df["pickup_second"] = train_df["pickup_datetime"].dt.second/100
+            train_df["pickup_minute_of_the_day"] = train_df["pickup_hour"] * 60 + train_df["pickup_minute"]
+            train_df["pickup_day_week"] =train_df["pickup_datetime"].dt.dayofweek
+            train_df["pickup_month"] = train_df["pickup_datetime"].dt.month
 
 
-            df["dropoff_datetime"] = pd.to_datetime(df["dropoff_datetime"])
-            df["dropoff_hour"] = df["dropoff_datetime"].dt.hour
-            df["dropoff_minute"] = df["dropoff_datetime"].dt.minute
-            df["dropoff_second"] = df["dropoff_datetime"].dt.second/100
-            df["dropoff_minute_of_the_day"] = df["dropoff_hour"] * 60 + df["dropoff_minute"]
-            df["dropoff_day_week"] =df["dropoff_datetime"].dt.dayofweek
-            df["dropoff_month"] = df["dropoff_datetime"].dt.month
+            train_df["dropoff_datetime"] = pd.to_datetime(train_df["dropoff_datetime"])
+            train_df["dropoff_hour"] = train_df["dropoff_datetime"].dt.hour
+            train_df["dropoff_minute"] = train_df["dropoff_datetime"].dt.minute
+            train_df["dropoff_second"] = train_df["dropoff_datetime"].dt.second/100
+            train_df["dropoff_minute_of_the_day"] = train_df["dropoff_hour"] * 60 + df["dropoff_minute"]
+            train_df["dropoff_day_week"] =train_df["dropoff_datetime"].dt.dayofweek
+            train_df["dropoff_month"] = train_df["dropoff_datetime"].dt.month
+
+            test_df["pickup_datetime"] = pd.to_datetime(test_df["pickup_datetime"])
+            test_df["pickup_hour"] = test_df["pickup_datetime"].dt.hour
+            test_df["pickup_minute"] = test_df["pickup_datetime"].dt.minute
+            test_df["pickup_second"] = test_df["pickup_datetime"].dt.second/100
+            test_df["pickup_minute_of_the_day"] = test_df["pickup_hour"] * 60 + df["pickup_minute"]
+            test_df["pickup_day_week"] =test_df["pickup_datetime"].dt.dayofweek
+            test_df["pickup_month"] = test_df["pickup_datetime"].dt.month
 
 
-            df.drop(columns=["pickup_datetime", "dropoff_datetime"], axis=1, inplace=True)
+            test_df["dropoff_datetime"] = pd.to_datetime(test_df["dropoff_datetime"])
+            test_df["dropoff_hour"] = test_df["dropoff_datetime"].dt.hour
+            test_df["dropoff_minute"] = test_df["dropoff_datetime"].dt.minute
+            test_df["dropoff_second"] = test_df["dropoff_datetime"].dt.second/100
+            test_df["dropoff_minute_of_the_day"] = test_df["dropoff_hour"] * 60 + df["dropoff_minute"]
+            test_df["dropoff_day_week"] =test_df["dropoff_datetime"].dt.dayofweek
+            test_df["dropoff_month"] = test_df["dropoff_datetime"].dt.month
 
 
-            Num_columns=df.columns[(df.dtypes == float) | (df.dtypes == int)]
-            Cate_columns=df.columns[df.dtypes=="object"]
+            train_df.drop(columns=["pickup_datetime", "dropoff_datetime"], axis=1, inplace=True)
+            test_df.drop(columns=["pickup_datetime", "dropoff_datetime"], axis=1, inplace=True)
 
-            store_and_fwd_flag=df[["store_and_fwd_flag"]].columns
+
+            Num_columns=train_df.columns[(train_df.dtypes == float) | (train_df.dtypes == int)]
+            Cate_columns=train_df.columns[train_df.dtypes=="object"]
+
+            store_and_fwd_flag=train_df[["store_and_fwd_flag"]].columns
 
             logging.info("Pipeline for Nominal encoding")
             trf1= Pipeline(steps=[
@@ -92,6 +96,9 @@ class DataTransformation:
                     ("ohe", trf1, store_and_fwd_flag),
                     ("SS", trf2, Num_columns)
                 ], remainder="passthrough")
+            
+            return preprocessor
+        
         except Exception as e:
             raise CustomException(e, sys)
         
@@ -107,7 +114,7 @@ class DataTransformation:
             logging.info(f"train DataFrame's head:\n {train_df.head().to_string()}")
             logging.info(f"test DataFrame's head:\n {test_df.head().to_string()}")
 
-            preprocessing_obj= self.get_data_transformer_obj()
+            preprocessing_obj= self.get_data_transformer_obj(train_df=train_df, test_df=test_df)
 
             target_col_name='trip_duration'
             
@@ -159,7 +166,10 @@ class DataTransformation:
 
             input_file = sys.argv[1]
             data_path = home_dir.as_posix() + input_file
-            output_path = home_dir.as_posix() + '/data/processed'
+
+            Data_transformation_instance=DataTransformation()
+
+            Data_transformation_instance.initiate_data_transformation()
             
             data = load_data(data_path)
             train_data, test_data = split_data(data, params['test_split'], params['seed'])

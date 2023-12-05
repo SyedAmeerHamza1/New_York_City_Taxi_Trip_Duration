@@ -72,6 +72,7 @@ class DataIngestion:
             
             #data = DataIngestion.initiate_data_ingestion(data_path)
             data_ingestion_instance = DataIngestion()
+
             data_ingestion_instance.initiate_data_ingestion( data_path=data_path, test_split=params['test_split'], seed=params['seed'])
             
         except Exception as e:
