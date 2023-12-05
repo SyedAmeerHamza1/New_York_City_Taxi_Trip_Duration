@@ -49,7 +49,7 @@ class DataIngestion:
 
        logging.info("Ingestion of the Data is completed")
 
-       save_object
+       
 
 
 

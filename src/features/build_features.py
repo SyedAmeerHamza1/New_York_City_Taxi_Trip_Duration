@@ -19,8 +19,8 @@ from src.utils import save_object
 @dataclass
 class DataTransformationConfig:
     preprocessor_obj_file_path= os.path.join("data\processed", "preprocessor.pkl")
-    train_arr_path= os.path.join("data\processed", "train_arr.csv")
-    test_arr_path= os.path.join("data\processed", "test_arr.csv")
+    train_arr_path= os.path.join("data\processed", "train_arr.npz")
+    test_arr_path= os.path.join("data\processed", "test_arr.npz")
 
 class DataTransformation:
     def __init__(self):
@@ -49,7 +49,7 @@ class DataTransformation:
             train_df["dropoff_hour"] = train_df["dropoff_datetime"].dt.hour
             train_df["dropoff_minute"] = train_df["dropoff_datetime"].dt.minute
             train_df["dropoff_second"] = train_df["dropoff_datetime"].dt.second/100
-            train_df["dropoff_minute_of_the_day"] = train_df["dropoff_hour"] * 60 + df["dropoff_minute"]
+            train_df["dropoff_minute_of_the_day"] = train_df["dropoff_hour"] * 60 + train_df["dropoff_minute"]
             train_df["dropoff_day_week"] =train_df["dropoff_datetime"].dt.dayofweek
             train_df["dropoff_month"] = train_df["dropoff_datetime"].dt.month
 
@@ -57,7 +57,7 @@ class DataTransformation:
             test_df["pickup_hour"] = test_df["pickup_datetime"].dt.hour
             test_df["pickup_minute"] = test_df["pickup_datetime"].dt.minute
             test_df["pickup_second"] = test_df["pickup_datetime"].dt.second/100
-            test_df["pickup_minute_of_the_day"] = test_df["pickup_hour"] * 60 + df["pickup_minute"]
+            test_df["pickup_minute_of_the_day"] = test_df["pickup_hour"] * 60 + test_df["pickup_minute"]
             test_df["pickup_day_week"] =test_df["pickup_datetime"].dt.dayofweek
             test_df["pickup_month"] = test_df["pickup_datetime"].dt.month
 
@@ -66,7 +66,7 @@ class DataTransformation:
             test_df["dropoff_hour"] = test_df["dropoff_datetime"].dt.hour
             test_df["dropoff_minute"] = test_df["dropoff_datetime"].dt.minute
             test_df["dropoff_second"] = test_df["dropoff_datetime"].dt.second/100
-            test_df["dropoff_minute_of_the_day"] = test_df["dropoff_hour"] * 60 + df["dropoff_minute"]
+            test_df["dropoff_minute_of_the_day"] = test_df["dropoff_hour"] * 60 + test_df["dropoff_minute"]
             test_df["dropoff_day_week"] =test_df["dropoff_datetime"].dt.dayofweek
             test_df["dropoff_month"] = test_df["dropoff_datetime"].dt.month
 
@@ -139,21 +139,16 @@ class DataTransformation:
                 obj=preprocessing_obj
             )
 
-            save_object(
-                file_path=self.data_transformation_config.train_arr_path,
-                obj=train_arr
-            )
-            save_object(
-                file_path=self.data_transformation_config.test_arr_path,
-                obj=test_arr
-            )
-
             logging.info("Preprocessing pickle file saved")
 
-            return (
+            np.savez(self.data_transformation_config.train_arr_path, train_arr)
+            np.savez(self.data_transformation_config.test_arr_path, test_arr)
+
+            return(
                 train_arr,
                 test_arr
             )
+
         except Exception as e:
             raise CustomException(e, sys)
         
@@ -161,21 +156,23 @@ class DataTransformation:
         try:
             curr_dir = pathlib.Path(__file__)
             home_dir = curr_dir.parent.parent.parent
-            params_file = home_dir.as_posix() + '/params.yaml'
-            params = yaml.safe_load(open(params_file))["make_dataset"]
+            '''params_file = home_dir.as_posix() + '/params.yaml'
+            params = yaml.safe_load(open(params_file))["make_dataset"]'''
 
-            input_file = sys.argv[1]
-            data_path = home_dir.as_posix() + input_file
+            input_file_train = sys.argv[1]
+            train_path = home_dir.as_posix() + input_file_train
+
+            input_file_test = sys.argv[2]
+            test_path= home_dir.as_posix() + input_file_test
 
             Data_transformation_instance=DataTransformation()
-
-            Data_transformation_instance.initiate_data_transformation()
+            Data_transformation_instance.initiate_data_transformation(train_path=train_path, test_path=test_path)
             
-            data = load_data(data_path)
-            train_data, test_data = split_data(data, params['test_split'], params['seed'])
-            save_data(train_data, test_data, output_path)
 
         except Exception as e:
             raise CustomException(e, sys)
+
+if __name__=="__main__":
+    DataTransformation.main()
 
         

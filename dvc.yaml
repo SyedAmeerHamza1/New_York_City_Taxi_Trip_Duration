@@ -7,4 +7,11 @@ stages:
     params:
     - make_dataset.test_split
     - make_dataset.seed
-  
+  build_features:
+    cmd: python .\src\features\build_features.py .\data\interim\train.csv  .\data\interim\test.csv
+    deps: 
+    - .\data\interim\train.csv
+    - .\data\interim\test.csv
+    - .\src\features\build_features.py
+
+    

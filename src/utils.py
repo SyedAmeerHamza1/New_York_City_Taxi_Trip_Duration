@@ -3,6 +3,7 @@ import sys
 import pandas as pd
 import numpy as np
 import pickle
+import pathlib
 
 from src.exception import CustomException
 
@@ -18,6 +19,13 @@ def save_object(file_path, obj):
             pickle.dump(obj, file_obj)
     except Exception as e:
         raise CustomException(e, sys)
+    
+def save_obj(train, test, preprocessed, output_path):
+        # Save the split datasets to the specified output path
+        pathlib.Path(output_path).mkdir(parents=True, exist_ok=True)
+        train.to_csv(output_path + '/train.csv', index=False)
+        test.to_csv(output_path + '/test.csv', index=False)
+        preprocessed.to_p(output_path + '/test.csv', index=False)
     
 
 def evaluate_model(X_train, y_train, X_test, y_test, models, params):
