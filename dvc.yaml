@@ -1,0 +1,9 @@
+stages:
+  make_dataset:
+    cmd: python .\src\data\make_dataset.py .\data\raw\NYC_Taxi_Trip_Duration.csv
+    deps:
+    - .\data\raw\NYC_Taxi_Trip_Duration.csv
+    - .\src\data\make_dataset.py
+    params:
+    - make_dataset.test_split
+    - make_dataset.seed
