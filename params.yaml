@@ -1,3 +1,23 @@
 make_dataset:
   test_split: 0.2
-  seed: 2023
+  seed: 42
+train_model: &DEFAULT 
+  positive: [True, False]
+  alpha: [1.0,0.5,1.5,0.8]
+  max_iter: [1000,800,900,1500]
+  l1_ratio: [0.5, 0.8,0.2]
+  criterion: ['squared_error', 'friedman_mse', 'absolute_error', 'poisson']
+  n_estimators: [8,64,128,256]
+  learning_rate: [.1,.01,0.5,.001]
+  subsample: [0.6,0.75,0.8,0.9]
+  base_estimator: ["LinearRegression()", "Ridge()", "Lasso()", "DecisionTreeRegressor()"]
+  bagging_n_estimators: [500, 100, 250]
+  max_samples: [0.25, 0.50]
+  bootstrap: [True]
+  max_features: [0.5, 0.25]
+  bootstrap_features: [True]
+  random_state: [42]
+
+large_hidden:
+  <<: *DEFAULT
+  num_hidden: 1024

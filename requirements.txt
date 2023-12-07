@@ -11,4 +11,6 @@ seaborn
 matplotlib
 scikit-learn
 dvclive
+mlflow
+dvclive
 

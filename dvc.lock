@@ -1,32 +1,107 @@
 schema: '2.0'
 stages:
   make_dataset:
-    cmd: python .\src\data\make_dataset.py .\data\raw\NYC_Taxi_Trip_Duration.csv
+    cmd: python .\src\data\make_dataset.py .\data\raw\NYCTaxiTrip.csv
     deps:
-    - path: .\data\raw\NYC_Taxi_Trip_Duration.csv
+    - path: .\data\raw\NYCTaxiTrip.csv
       hash: md5
       md5: e59c291a4b1c640f1dab33b89daa22e1
       size: 200589097
     - path: .\src\data\make_dataset.py
       hash: md5
-      md5: 01db9659cfdc2bd85a7ee9d52a2097e8
-      size: 2345
+      md5: 19572c7652c4fcd95d982b41c549e805
+      size: 3295
     params:
       params.yaml:
-        make_dataset.seed: 2023
+        make_dataset.seed: 42
         make_dataset.test_split: 0.2
   build_features:
-    cmd: python .\src\features\build_features.py .\data\interim\train.csv  .\data\interim\test.csv
+    cmd: python .\src\features\build_features.py .\data\interim\train.csv .\data\interim\test.csv
     deps:
+    - path: .\data/interim/train.csv
+      hash: md5
+      md5: a8eb655f9e6926e902963c92525122bb
+      size: 143153073
     - path: .\data\interim\test.csv
       hash: md5
-      md5: 83081bf3023566549ddfd13b576a421e
-      size: 39402219
-    - path: .\data\interim\train.csv
-      hash: md5
-      md5: b3d5427011f310988a0eefed7bdd3acd
-      size: 157602585
+      md5: 020732c92ee965939d045618c1a69ea7
+      size: 35789352
     - path: .\src\features\build_features.py
       hash: md5
-      md5: e819486c51d2391e23c7cf7e43b0c3db
-      size: 7381
+      md5: ccf6a86125dc66cc85ac1937f100bd95
+      size: 4701
+  train_model:
+    cmd: python .\src\models\train_model.py
+    deps:
+    - path: .\data/interim/train.csv
+      hash: md5
+      md5: a8eb655f9e6926e902963c92525122bb
+      size: 143153073
+    - path: .\data\interim\test.csv
+      hash: md5
+      md5: 020732c92ee965939d045618c1a69ea7
+      size: 35789352
+    - path: .\src\models\train_model.py
+      hash: md5
+      md5: 58d2bd216321ba329b7090b75a503cb1
+      size: 6640
+    params:
+      params.yaml:
+        train_model.alpha:
+        - 1.0
+        - 0.5
+        - 1.5
+        - 0.8
+        train_model.bagging_n_estimators:
+        - 500
+        - 100
+        - 250
+        train_model.base_estimator:
+        - LinearRegression()
+        - Ridge()
+        - Lasso()
+        - DecisionTreeRegressor()
+        train_model.bootstrap:
+        - true
+        train_model.bootstrap_features:
+        - true
+        train_model.criterion:
+        - squared_error
+        - friedman_mse
+        - absolute_error
+        - poisson
+        train_model.l1_ratio:
+        - 0.5
+        - 0.8
+        - 0.2
+        train_model.learning_rate:
+        - 0.1
+        - 0.01
+        - 0.5
+        - 0.001
+        train_model.max_features:
+        - 0.5
+        - 0.25
+        train_model.max_iter:
+        - 1000
+        - 800
+        - 900
+        - 1500
+        train_model.max_samples:
+        - 0.25
+        - 0.5
+        train_model.n_estimators:
+        - 8
+        - 64
+        - 128
+        - 256
+        train_model.positive:
+        - true
+        - false
+        train_model.random_state:
+        - 42
+        train_model.subsample:
+        - 0.6
+        - 0.75
+        - 0.8
+        - 0.9

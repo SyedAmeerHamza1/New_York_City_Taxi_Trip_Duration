@@ -33,48 +33,6 @@ class DataTransformation:
         '''
 
         try:
-            train_df.drop(columns='id', axis=1, inplace=True)
-            test_df.drop(columns='id', axis=1, inplace=True)
-
-            train_df["pickup_datetime"] = pd.to_datetime(train_df["pickup_datetime"])
-            train_df["pickup_hour"] = train_df["pickup_datetime"].dt.hour
-            train_df["pickup_minute"] = train_df["pickup_datetime"].dt.minute
-            train_df["pickup_second"] = train_df["pickup_datetime"].dt.second/100
-            train_df["pickup_minute_of_the_day"] = train_df["pickup_hour"] * 60 + train_df["pickup_minute"]
-            train_df["pickup_day_week"] =train_df["pickup_datetime"].dt.dayofweek
-            train_df["pickup_month"] = train_df["pickup_datetime"].dt.month
-
-
-            train_df["dropoff_datetime"] = pd.to_datetime(train_df["dropoff_datetime"])
-            train_df["dropoff_hour"] = train_df["dropoff_datetime"].dt.hour
-            train_df["dropoff_minute"] = train_df["dropoff_datetime"].dt.minute
-            train_df["dropoff_second"] = train_df["dropoff_datetime"].dt.second/100
-            train_df["dropoff_minute_of_the_day"] = train_df["dropoff_hour"] * 60 + train_df["dropoff_minute"]
-            train_df["dropoff_day_week"] =train_df["dropoff_datetime"].dt.dayofweek
-            train_df["dropoff_month"] = train_df["dropoff_datetime"].dt.month
-
-            test_df["pickup_datetime"] = pd.to_datetime(test_df["pickup_datetime"])
-            test_df["pickup_hour"] = test_df["pickup_datetime"].dt.hour
-            test_df["pickup_minute"] = test_df["pickup_datetime"].dt.minute
-            test_df["pickup_second"] = test_df["pickup_datetime"].dt.second/100
-            test_df["pickup_minute_of_the_day"] = test_df["pickup_hour"] * 60 + test_df["pickup_minute"]
-            test_df["pickup_day_week"] =test_df["pickup_datetime"].dt.dayofweek
-            test_df["pickup_month"] = test_df["pickup_datetime"].dt.month
-
-
-            test_df["dropoff_datetime"] = pd.to_datetime(test_df["dropoff_datetime"])
-            test_df["dropoff_hour"] = test_df["dropoff_datetime"].dt.hour
-            test_df["dropoff_minute"] = test_df["dropoff_datetime"].dt.minute
-            test_df["dropoff_second"] = test_df["dropoff_datetime"].dt.second/100
-            test_df["dropoff_minute_of_the_day"] = test_df["dropoff_hour"] * 60 + test_df["dropoff_minute"]
-            test_df["dropoff_day_week"] =test_df["dropoff_datetime"].dt.dayofweek
-            test_df["dropoff_month"] = test_df["dropoff_datetime"].dt.month
-
-
-            train_df.drop(columns=["pickup_datetime", "dropoff_datetime"], axis=1, inplace=True)
-            test_df.drop(columns=["pickup_datetime", "dropoff_datetime"], axis=1, inplace=True)
-
-
             Num_columns=train_df.columns[(train_df.dtypes == float) | (train_df.dtypes == int)]
             Cate_columns=train_df.columns[train_df.dtypes=="object"]
 
@@ -94,7 +52,7 @@ class DataTransformation:
             preprocessor= ColumnTransformer(
                 [
                     ("ohe", trf1, store_and_fwd_flag),
-                    ("SS", trf2, Num_columns)
+                    #("SS", trf2, Num_columns)
                 ], remainder="passthrough")
             
             return preprocessor
@@ -116,7 +74,7 @@ class DataTransformation:
 
             preprocessing_obj= self.get_data_transformer_obj(train_df=train_df, test_df=test_df)
 
-            target_col_name='trip_duration'
+            target_col_name=['trip_duration']
             
             input_features_train_df= train_df.drop(target_col_name, axis=1)
             target_feature_train_df= train_df[target_col_name]
@@ -144,10 +102,12 @@ class DataTransformation:
             np.savez(self.data_transformation_config.train_arr_path, train_arr)
             np.savez(self.data_transformation_config.test_arr_path, test_arr)
 
+            print(train_arr[:, -1])
             return(
                 train_arr,
                 test_arr
             )
+
 
         except Exception as e:
             raise CustomException(e, sys)
@@ -174,5 +134,3 @@ class DataTransformation:
 
 if __name__=="__main__":
     DataTransformation.main()
-
-        

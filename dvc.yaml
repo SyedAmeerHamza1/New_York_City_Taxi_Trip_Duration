@@ -1,17 +1,47 @@
 stages:
   make_dataset:
-    cmd: python .\src\data\make_dataset.py .\data\raw\NYC_Taxi_Trip_Duration.csv
+    cmd: python .\src\data\make_dataset.py .\data\raw\NYCTaxiTrip.csv
     deps:
-    - .\data\raw\NYC_Taxi_Trip_Duration.csv
+    - .\data\raw\NYCTaxiTrip.csv
     - .\src\data\make_dataset.py
     params:
     - make_dataset.test_split
     - make_dataset.seed
   build_features:
-    cmd: python .\src\features\build_features.py .\data\interim\train.csv  .\data\interim\test.csv
-    deps: 
-    - .\data\interim\train.csv
+    cmd: python .\src\features\build_features.py .\data\interim\train.csv .\data\interim\test.csv
+    deps:
     - .\data\interim\test.csv
+    - .\data/interim/train.csv
     - .\src\features\build_features.py
+  train_model:
+    cmd: python .\src\models\train_model.py 
+    deps:
+    - .\data\interim\test.csv
+    - .\data/interim/train.csv
+    - .\src\models\train_model.py
+    params:
+    - train_model.positive
+    - train_model.alpha
+    - train_model.max_iter
+    - train_model.l1_ratio
+    - train_model.criterion
+    - train_model.n_estimators
+    - train_model.learning_rate
+    - train_model.subsample
+    - train_model.base_estimator
+    - train_model.bagging_n_estimators
+    - train_model.max_samples
+    - train_model.bootstrap
+    - train_model.max_features
+    - train_model.bootstrap_features
+    - train_model.random_state
 
-    
+
+
+params:
+- dvclive/params.yaml
+metrics:
+- dvclive/metrics.json
+plots:
+- dvclive/plots/metrics:
+    x: step
