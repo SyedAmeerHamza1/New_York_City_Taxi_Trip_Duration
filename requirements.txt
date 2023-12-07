@@ -11,6 +11,6 @@ seaborn
 matplotlib
 scikit-learn
 dvclive
-mlflow
+mlflow==2.8.1
 dvclive
 

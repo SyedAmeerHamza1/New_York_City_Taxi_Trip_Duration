@@ -28,8 +28,8 @@ stages:
       size: 35789352
     - path: .\src\features\build_features.py
       hash: md5
-      md5: ccf6a86125dc66cc85ac1937f100bd95
-      size: 4701
+      md5: 73be6dceab163c0f511c55bcb5e4fa55
+      size: 4703
   train_model:
     cmd: python .\src\models\train_model.py
     deps:
@@ -43,8 +43,8 @@ stages:
       size: 35789352
     - path: .\src\models\train_model.py
       hash: md5
-      md5: 58d2bd216321ba329b7090b75a503cb1
-      size: 6640
+      md5: 4cb818d9f8a17327aa679f1af0eb4e6a
+      size: 8128
     params:
       params.yaml:
         train_model.alpha:

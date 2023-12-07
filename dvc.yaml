@@ -14,7 +14,7 @@ stages:
     - .\data/interim/train.csv
     - .\src\features\build_features.py
   train_model:
-    cmd: python .\src\models\train_model.py 
+    cmd: python .\src\models\train_model.py
     deps:
     - .\data\interim\test.csv
     - .\data/interim/train.csv
@@ -38,10 +38,3 @@ stages:
 
 
 
-params:
-- dvclive/params.yaml
-metrics:
-- dvclive/metrics.json
-plots:
-- dvclive/plots/metrics:
-    x: step

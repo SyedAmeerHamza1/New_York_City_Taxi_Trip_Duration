@@ -117,7 +117,7 @@ class DataTransformation:
             curr_dir = pathlib.Path(__file__)
             home_dir = curr_dir.parent.parent.parent
             '''params_file = home_dir.as_posix() + '/params.yaml'
-            params = yaml.safe_load(open(params_file))["make_dataset"]'''
+            params = yaml.safe_load(open(params_file))["build_features"]'''
 
             input_file_train = sys.argv[1]
             train_path = home_dir.as_posix() + input_file_train
